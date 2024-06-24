@@ -1,3 +1,4 @@
+import { ApplicationError } from '@lib/errors';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LectureService } from './lecture.service';
 import { Participant } from '../../domain/models';
@@ -36,6 +37,50 @@ describe('LectureService', () => {
       });
       expect(result).toBeInstanceOf(Participant);
       expect(result).toEqual(expected);
+    });
+
+    describe('다음의 경우 특강 신청이 실패합니다.', () => {
+      it('이미 특강을 신청한 유저', async () => {
+        // given
+        const lectureId = '1';
+        const userId = '1';
+
+        // when
+        const result = lectureService.apply(lectureId, userId);
+
+        // then
+        await expect(result).rejects.toThrow(
+          ApplicationError.duplicated('이미 특강을 신청한 유저입니다.'),
+        );
+      });
+
+      it('특강이 존재하지 않음', async () => {
+        // given
+        const lectureId = '999';
+        const userId = '1';
+
+        // when
+        const result = lectureService.apply(lectureId, userId);
+
+        // then
+        await expect(result).rejects.toThrow(
+          ApplicationError.notFound('특강을 찾을 수 없습니다.'),
+        );
+      });
+
+      it('유저를 찾을 수 없음', async () => {
+        // given
+        const lectureId = '1';
+        const userId = '999';
+
+        // when
+        const result = lectureService.apply(lectureId, userId);
+
+        // then
+        await expect(result).rejects.toThrow(
+          ApplicationError.unauthorized('유저를 찾을 수 없습니다.'),
+        );
+      });
     });
   });
 });
