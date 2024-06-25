@@ -13,6 +13,6 @@ export class UserRepositoryImpl implements UserRepository {
   async findById(id: string): Promise<User> {
     const repository = this.dataSource.manager.getRepository(UserEntity);
     const user = await repository.findOneBy({ id });
-    return UserMapper.toDomain(user);
+    return user ? UserMapper.toDomain(user) : null;
   }
 }

@@ -1,15 +1,84 @@
 import { ApplicationError } from '@lib/errors';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Participant } from '../../domain/models';
 import { LectureService } from './lecture.service';
+import { Lecture, Participant, Session, User } from '../../domain/models';
+import {
+  PARTICIPANT_REPOSITORY,
+  ParticipantRepository,
+  SESSION_REPOSITORY,
+  SessionRepository,
+  USER_REPOSITORY,
+  UserRepository,
+} from '../../domain/repositories';
 import { lectureServiceProvider } from '..';
+
+const lecture = Lecture.from({
+  id: '1',
+  name: '테스트 특강',
+  createdDate: new Date(),
+  updatedDate: new Date(),
+});
+const session = Session.from({
+  id: '1',
+  date: new Date(),
+  time: new Date(),
+  isPublished: true,
+  maxParticipants: 30,
+  lecture,
+  createdDate: new Date(),
+  updatedDate: new Date(),
+});
+const user = User.from({
+  id: '1',
+  realname: '이선주',
+  email: 'boy672820@gmail.com',
+  phone: '01021004364',
+  createdDate: new Date(),
+  updatedDate: new Date(),
+});
+const participant = Participant.from({
+  sessionId: session.id,
+  userId: user.id,
+  realname: user.realname,
+  email: user.email,
+  phone: user.phone,
+  participantedDate: new Date(),
+  createdDate: user.createdDate,
+  updatedDate: user.updatedDate,
+});
+
+const sessionRepository: SessionRepository = {
+  findById: jest.fn().mockResolvedValue(Promise.resolve(session)),
+};
+const userRepository: UserRepository = {
+  findById: jest.fn().mockResolvedValue(Promise.resolve(user)),
+};
+const participantRepository: ParticipantRepository = {
+  findById: jest.fn().mockResolvedValue(Promise.resolve(participant)),
+  save: jest.fn(),
+  exists: jest.fn().mockResolvedValue(Promise.resolve(false)),
+};
 
 describe('LectureService', () => {
   let lectureService: LectureService;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      providers: [lectureServiceProvider],
+      providers: [
+        lectureServiceProvider,
+        {
+          provide: SESSION_REPOSITORY,
+          useValue: sessionRepository,
+        },
+        {
+          provide: USER_REPOSITORY,
+          useValue: userRepository,
+        },
+        {
+          provide: PARTICIPANT_REPOSITORY,
+          useValue: participantRepository,
+        },
+      ],
     }).compile();
 
     lectureService = moduleRef.get<LectureService>(LectureService);
@@ -24,6 +93,7 @@ describe('LectureService', () => {
       // given
       const lectureId = '1';
       const userId = '1';
+      jest.spyOn(participantRepository, 'findById').mockResolvedValueOnce(null);
 
       // when
       const result = await lectureService.apply(lectureId, userId);
@@ -39,8 +109,9 @@ describe('LectureService', () => {
         createdDate: expect.any(Date),
         updatedDate: expect.any(Date),
       });
-      expect(result).toBeInstanceOf(Participant);
       expect(result).toEqual(expected);
+      expect(result).toBeInstanceOf(Participant);
+      expect(participantRepository.save).toHaveBeenCalled();
     });
 
     describe('다음의 경우 특강 신청이 실패합니다.', () => {
@@ -54,7 +125,7 @@ describe('LectureService', () => {
 
         // then
         await expect(result).rejects.toThrow(
-          ApplicationError.duplicated('이미 특강을 신청한 유저입니다.'),
+          ApplicationError.duplicated('이미 신청한 특강입니다.'),
         );
       });
 
@@ -62,6 +133,7 @@ describe('LectureService', () => {
         // given
         const lectureId = '999';
         const userId = '1';
+        jest.spyOn(sessionRepository, 'findById').mockResolvedValueOnce(null);
 
         // when
         const result = lectureService.apply(lectureId, userId);
@@ -76,6 +148,7 @@ describe('LectureService', () => {
         // given
         const lectureId = '1';
         const userId = '999';
+        jest.spyOn(userRepository, 'findById').mockResolvedValueOnce(null);
 
         // when
         const result = lectureService.apply(lectureId, userId);

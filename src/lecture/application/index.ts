@@ -2,7 +2,7 @@ import { Provider } from '@nestjs/common';
 import { LectureService } from './services/lecture.service';
 import { LectureServiceImpl } from './services/lecture.service.impl';
 
-export const lectureServiceProvider = {
+export const lectureServiceProvider: Provider = {
   provide: LectureService,
   useClass: LectureServiceImpl,
 };

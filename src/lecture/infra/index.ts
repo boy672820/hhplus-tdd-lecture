@@ -1,16 +1,30 @@
 import { Provider } from '@nestjs/common';
-import { PARTICIPANT_REPOSITORY } from '../domain/repositories';
+import {
+  USER_REPOSITORY,
+  PARTICIPANT_REPOSITORY,
+  SESSION_REPOSITORY,
+} from '../domain/repositories';
 import { ParticipantRepositoryImpl } from './repositories/participant.repository.impl';
-import { USER_REPOSITORY } from '../domain/repositories/user.repository';
 import { UserRepositoryImpl } from './repositories/user.repository.impl';
+import { SessionRepositoryImpl } from './repositories/session.repository.impl';
+
+export const participantRepositoryProvider: Provider = {
+  provide: PARTICIPANT_REPOSITORY,
+  useClass: ParticipantRepositoryImpl,
+};
+
+export const userRepositoryProvider: Provider = {
+  provide: USER_REPOSITORY,
+  useClass: UserRepositoryImpl,
+};
+
+export const sessionRepositoryProvider: Provider = {
+  provide: SESSION_REPOSITORY,
+  useClass: SessionRepositoryImpl,
+};
 
 export const repositories: Provider[] = [
-  {
-    provide: PARTICIPANT_REPOSITORY,
-    useClass: ParticipantRepositoryImpl,
-  },
-  {
-    provide: USER_REPOSITORY,
-    useClass: UserRepositoryImpl,
-  },
+  participantRepositoryProvider,
+  userRepositoryProvider,
+  sessionRepositoryProvider,
 ];

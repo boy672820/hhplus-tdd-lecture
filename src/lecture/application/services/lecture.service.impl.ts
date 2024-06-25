@@ -1,9 +1,12 @@
+import { ApplicationError } from '@lib/errors';
 import { Inject, Injectable } from '@nestjs/common';
 import { LectureService } from './lecture.service';
 import { Participant } from '../../domain/models';
 import {
   PARTICIPANT_REPOSITORY,
   ParticipantRepository,
+  SESSION_REPOSITORY,
+  SessionRepository,
   USER_REPOSITORY,
   UserRepository,
 } from '../../domain/repositories';
@@ -11,6 +14,8 @@ import {
 @Injectable()
 export class LectureServiceImpl extends LectureService {
   constructor(
+    @Inject(SESSION_REPOSITORY)
+    private readonly sessionRepository: SessionRepository,
     @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository,
     @Inject(PARTICIPANT_REPOSITORY)
     private readonly participantRepository: ParticipantRepository,
@@ -18,15 +23,32 @@ export class LectureServiceImpl extends LectureService {
     super();
   }
 
-  async apply(lectureId: string, userId: string): Promise<Participant> {
-    return Participant.create({
-      sessionId: '1',
+  async apply(sessionId: string, userId: string): Promise<Participant> {
+    const session = await this.sessionRepository.findById(sessionId);
+
+    if (!session) {
+      throw ApplicationError.notFound('특강을 찾을 수 없습니다.');
+    }
+
+    const user = await this.userRepository.findById(userId);
+
+    if (!user) {
+      throw ApplicationError.unauthorized('유저를 찾을 수 없습니다.');
+    }
+
+    const participant = await this.participantRepository.findById({
+      sessionId,
       userId,
-      realname: '이선주',
-      email: 'boy672820@gmail.com',
-      phone: '01021004364',
-      createdDate: new Date(),
-      updatedDate: new Date(),
     });
+
+    if (participant) {
+      throw ApplicationError.duplicated('이미 신청한 특강입니다.');
+    }
+
+    const newParticipant = session.applyUser(user);
+
+    await this.participantRepository.save(newParticipant);
+
+    return newParticipant;
   }
 }
