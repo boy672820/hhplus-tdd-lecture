@@ -1,14 +1,15 @@
 import { ApplicationError } from '@lib/errors';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LectureService } from './lecture.service';
 import { Participant } from '../../domain/models';
+import { LectureService } from './lecture.service';
+import { lectureServiceProvider } from '..';
 
 describe('LectureService', () => {
   let lectureService: LectureService;
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      providers: [LectureService],
+      providers: [lectureServiceProvider],
     }).compile();
 
     lectureService = moduleRef.get<LectureService>(LectureService);
@@ -29,11 +30,14 @@ describe('LectureService', () => {
 
       // then
       const expected = Participant.from({
-        id: expect.any(String),
+        sessionId: '1',
+        userId,
         realname: '이선주',
         email: 'boy672820@gmail.com',
         phone: '01021004364',
         participantedDate: expect.any(Date),
+        createdDate: expect.any(Date),
+        updatedDate: expect.any(Date),
       });
       expect(result).toBeInstanceOf(Participant);
       expect(result).toEqual(expected);

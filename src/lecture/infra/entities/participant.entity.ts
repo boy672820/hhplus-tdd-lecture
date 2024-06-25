@@ -7,6 +7,9 @@ export class ParticipantEntity {
   @PrimaryUlid({ name: 'session_id' })
   sessionId: string;
 
+  @PrimaryUlid({ name: 'user_id' })
+  userId: string;
+
   @ColumnDatetime({ name: 'participanted_date' })
   participantedDate: Date;
 

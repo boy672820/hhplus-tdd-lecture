@@ -18,6 +18,7 @@ import { DatabaseConfigModule, DatabaseConfigService } from '@config/database';
         password: databaseConfig.password,
         database: databaseConfig.database,
         entities: [__dirname + '/../../**/*.entity{.ts,.js}'],
+        charset: 'utf8mb4_general_ci',
         synchronize: appConfig.nodeEnv === 'development',
       }),
       inject: [AppConfigService, DatabaseConfigService],
