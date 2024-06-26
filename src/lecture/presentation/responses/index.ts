@@ -1,1 +1,1 @@
-export * from './participant.response';
+export * from './application.response';

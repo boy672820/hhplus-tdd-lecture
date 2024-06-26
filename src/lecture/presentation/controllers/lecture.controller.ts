@@ -1,18 +1,18 @@
-import { Controller, Param, Post } from '@nestjs/common';
-import { ParticipantResponse } from '../responses';
+import { Body, Controller, Inject, Param, Post } from '@nestjs/common';
+import { ApplicationResponse } from '../responses';
+import { LectureService } from '../../application/services';
+import { ApplyRequest } from '../requests';
 
 @Controller('lectures')
 export class LectureController {
-  @Post('sessions/:sessionId/apply')
+  constructor(@Inject() private readonly lectureService: LectureService) {}
+
+  @Post(':lectureId/apply')
   async apply(
-    @Param('sessionId') sessionId: string,
-    { userId }: { userId: string },
-  ): Promise<ParticipantResponse> {
-    return ParticipantResponse.from({
-      realname: '이선주',
-      email: 'boy672820@gmail.com',
-      phone: '01021004364',
-      participantedDate: new Date(),
-    });
+    @Param('lectureId') lectureId: string,
+    @Body() { userId }: ApplyRequest,
+  ): Promise<ApplicationResponse> {
+    const application = await this.lectureService.apply(lectureId, userId);
+    return ApplicationResponse.from(application);
   }
 }

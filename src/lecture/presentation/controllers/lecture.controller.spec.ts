@@ -1,6 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LectureController } from './lecture.controller';
-import { ParticipantResponse } from '../responses';
+import { ApplicationResponse } from '../responses';
+import { LectureService } from '../../application/services';
+import { Application } from '../../domain/models';
+
+const application = Application.from({
+  id: '1',
+  userId: '1',
+  lectureId: '1',
+  appliedDate: new Date(),
+});
+
+const lectureService: LectureService = {
+  apply: jest.fn().mockResolvedValue(application),
+};
 
 describe('LectureController', () => {
   let lectureController: LectureController;
@@ -8,6 +21,7 @@ describe('LectureController', () => {
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [LectureController],
+      providers: [{ provide: LectureService, useValue: lectureService }],
     }).compile();
 
     lectureController = moduleRef.get<LectureController>(LectureController);
@@ -19,18 +33,18 @@ describe('LectureController', () => {
 
   describe('특강 신청하기', () => {
     it('유저는 특강을 신청할 수 있어야합니다.', async () => {
+      // Given
       const sessionId = '1';
       const userId = '1';
 
-      const expected: ParticipantResponse = {
-        realname: '이선주',
-        email: 'boy672820@gmail.com',
-        phone: '01021004364',
-        participantedDate: expect.any(Date),
+      // When
+      const result = await lectureController.apply(sessionId, { userId });
+
+      // Then
+      const expected: ApplicationResponse = {
+        appliedDate: application.appliedDate,
       };
-      await expect(
-        lectureController.apply(sessionId, { userId }),
-      ).resolves.toEqual(expected);
+      expect(result).toEqual(expected);
     });
   });
 });

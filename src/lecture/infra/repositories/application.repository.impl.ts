@@ -15,10 +15,14 @@ export class ApplicationRepositoryImpl implements ApplicationRepository {
     lectureId: string,
   ): Promise<Application | null> {
     const repository = await this.dataSource.getRepository(ApplicationEntity);
-    const application = await repository.findOneBy({
-      user: { id: userId },
-      lecture: { id: lectureId },
+    const application = await repository.findOne({
+      where: {
+        user: { id: userId },
+        lecture: { id: lectureId },
+      },
+      relations: ['user', 'lecture'],
     });
+    console.log(application);
     return application ? ApplicationMapper.toDomain(application) : null;
   }
 

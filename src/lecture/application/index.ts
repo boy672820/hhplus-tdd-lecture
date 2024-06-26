@@ -1,5 +1,5 @@
 import { Provider } from '@nestjs/common';
-import { LectureService } from './services/lecture.service';
+import { LectureService } from './services';
 import { LectureServiceImpl } from './services/lecture.service.impl';
 
 export const lectureServiceProvider: Provider = {
