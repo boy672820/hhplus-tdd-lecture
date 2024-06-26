@@ -9,6 +9,18 @@ export class LectureEntity {
   @Column('text')
   name: string;
 
+  @Column({ type: 'date' })
+  date: Date;
+
+  @Column({ type: 'time' })
+  time: Date;
+
+  @Column({ type: 'int', name: 'max_participants' })
+  maxParticipants: number;
+
+  @Column({ type: 'int', name: 'remaing_seats' })
+  remainingSeats: number;
+
   @ColumnDatetime({ name: 'created_date' })
   createdDate: Date;
 

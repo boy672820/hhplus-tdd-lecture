@@ -1,40 +1,54 @@
-import { User, UserProps } from './user.abstract';
+import { ulid } from 'ulid';
 
-interface Props extends UserProps {
-  sessionId: string;
+interface Props {
+  id: string;
+  lectureId: string;
+  realname: string;
+  email: string;
+  phone: string;
   participantedDate: Date;
 }
 
-export class Participant extends User implements Props {
-  private _sessionId: string;
+export class Participant implements Props {
+  private _id: string;
+  private _lectureId: string;
+  private _realname: string;
+  private _email: string;
+  private _phone: string;
   private _participantedDate: Date;
 
-  get sessionId(): string {
-    return this._sessionId;
+  get id() {
+    return this._id;
   }
-  get participantedDate(): Date {
+  get lectureId() {
+    return this._lectureId;
+  }
+  get realname() {
+    return this._realname;
+  }
+  get email() {
+    return this._email;
+  }
+  get phone() {
+    return this._phone;
+  }
+  get participantedDate() {
     return this._participantedDate;
   }
 
   private constructor(props: Props) {
-    super(props);
-    this._sessionId = props.sessionId;
+    this._id = props.id;
+    this._lectureId = props.lectureId;
+    this._realname = props.realname;
+    this._email = props.email;
+    this._phone = props.phone;
     this._participantedDate = props.participantedDate;
   }
 
-  static from = (props: Props): Participant => new Participant(props);
-
   static create = (
-    props: Pick<
-      Props,
-      | 'sessionId'
-      | 'userId'
-      | 'realname'
-      | 'email'
-      | 'phone'
-      | 'createdDate'
-      | 'updatedDate'
-    >,
+    props: Pick<Props, 'lectureId' | 'realname' | 'email' | 'phone'>,
   ): Participant =>
-    new Participant({ ...props, participantedDate: new Date() });
+    new Participant({ ...props, id: ulid(), participantedDate: new Date() });
+
+  static from = (props: Props): Participant => new Participant(props);
 }

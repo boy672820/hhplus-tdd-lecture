@@ -1,5 +1,5 @@
-import { Participant } from '../../domain/models';
+import { Application } from '../../domain/models';
 
 export abstract class LectureService {
-  abstract apply(lectureId: string, userId: string): Promise<Participant>;
+  abstract apply(lectureId: string, userId: string): Promise<Application>;
 }

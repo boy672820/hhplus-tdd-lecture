@@ -1,12 +1,12 @@
 import { ApplicationError } from '@lib/errors';
 import { Inject, Injectable } from '@nestjs/common';
 import { LectureService } from './lecture.service';
-import { Participant } from '../../domain/models';
+import { Application } from '../../domain/models';
 import {
-  PARTICIPANT_REPOSITORY,
-  ParticipantRepository,
-  SESSION_REPOSITORY,
-  SessionRepository,
+  APPLICATION_REPOSITORY,
+  ApplicationRepository,
+  LECTURE_REPOSITORY,
+  LectureRepository,
   USER_REPOSITORY,
   UserRepository,
 } from '../../domain/repositories';
@@ -14,46 +14,43 @@ import {
 @Injectable()
 export class LectureServiceImpl extends LectureService {
   constructor(
-    @Inject(SESSION_REPOSITORY)
-    private readonly sessionRepository: SessionRepository,
+    @Inject(LECTURE_REPOSITORY)
+    private readonly lectureRepository: LectureRepository,
     @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository,
-    @Inject(PARTICIPANT_REPOSITORY)
-    private readonly participantRepository: ParticipantRepository,
+    @Inject(APPLICATION_REPOSITORY)
+    private readonly applicationRepository: ApplicationRepository,
   ) {
     super();
   }
 
-  async apply(sessionId: string, userId: string): Promise<Participant> {
+  async apply(lectureId: string, userId: string): Promise<Application> {
+    const lecture = await this.lectureRepository.findById(lectureId);
+
+    if (!lecture) {
+      throw ApplicationError.notFound('특강을 찾을 수 없습니다.');
+    }
+
     const user = await this.userRepository.findById(userId);
 
     if (!user) {
       throw ApplicationError.unauthorized('유저를 찾을 수 없습니다.');
     }
 
-    const participant = await this.participantRepository.findById({
-      sessionId,
-      userId,
-    });
+    const application =
+      await this.applicationRepository.findByUserIdAndLectureId(
+        userId,
+        lectureId,
+      );
 
-    if (participant) {
+    if (application) {
       throw ApplicationError.duplicated('이미 신청한 특강입니다.');
     }
 
-    const session = await this.sessionRepository.findById(sessionId);
+    const newApplication = lecture.applyUser(user);
 
-    if (!session) {
-      throw ApplicationError.notFound('특강을 찾을 수 없습니다.');
-    }
+    await this.applicationRepository.save(newApplication);
+    await this.lectureRepository.save(lecture);
 
-    return Participant.from({
-      userId: user.id,
-      sessionId: session.id,
-      realname: user.realname,
-      email: user.email,
-      phone: user.phone,
-      participantedDate: new Date(),
-      createdDate: user.createdDate,
-      updatedDate: user.updatedDate,
-    });
+    return newApplication;
   }
 }

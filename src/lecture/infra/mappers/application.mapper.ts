@@ -5,19 +5,16 @@ export class ApplicationMapper {
   static toDomain = (entity: ApplicationEntity): Application =>
     Application.from({
       id: entity.id,
-      sessionId: entity.session.id,
-      userId: entity.participant.user.id,
-      realname: entity.participant.user.realname,
-      email: entity.participant.user.email,
-      phone: entity.participant.user.phone,
+      lectureId: entity.lecture.id,
+      userId: entity.user.id,
       appliedDate: entity.appliedDate,
-      createdDate: entity.participant.user.createdDate,
-      updatedDate: entity.participant.user.updatedDate,
     });
 
   static toEntity(domain: Application): ApplicationEntity {
     const entity = new ApplicationEntity();
     entity.id = domain.id;
+    entity.lecture.id = domain.lectureId;
+    entity.user.id = domain.userId;
     entity.appliedDate = domain.appliedDate;
     return entity;
   }

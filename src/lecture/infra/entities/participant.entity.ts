@@ -1,19 +1,23 @@
-import { ColumnDatetime, PrimaryUlid } from '@lib/decorators';
-import { Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { UserEntity } from './user.entity';
+import { ColumnDatetime, ColumnUlid, PrimaryUlid } from '@lib/decorators';
+import { Column, Entity } from 'typeorm';
 
 @Entity('participants')
 export class ParticipantEntity {
-  @PrimaryUlid({ name: 'session_id' })
-  sessionId: string;
+  @PrimaryUlid({ name: 'participant_id' })
+  id: string;
 
-  @PrimaryUlid({ name: 'user_id' })
-  userId: string;
+  @ColumnUlid({ name: 'lecture_id' })
+  lectureId: string;
+
+  @Column()
+  realname: string;
+
+  @Column({ unique: true })
+  email: string;
+
+  @Column({ unique: true })
+  phone: string;
 
   @ColumnDatetime({ name: 'participanted_date' })
   participantedDate: Date;
-
-  @ManyToOne(() => UserEntity, { cascade: true, nullable: false })
-  @JoinColumn({ name: 'user_id' })
-  user: UserEntity;
 }
