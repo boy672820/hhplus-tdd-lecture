@@ -1,14 +1,24 @@
 import { ColumnDatetime, PrimaryUlid } from '@lib/decorators';
-import { Entity } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { SessionEntity } from './session.entity';
+import { ParticipantEntity } from './participant.entity';
 
 @Entity('applications')
 export class ApplicationEntity {
-  @PrimaryUlid({ name: 'session_id' })
-  sessionId: string;
-
-  @PrimaryUlid({ name: 'user_id' })
-  userId: string;
+  @PrimaryUlid({ name: 'application_id' })
+  id: string;
 
   @ColumnDatetime({ name: 'applied_date' })
   appliedDate: Date;
+
+  @ManyToOne(() => SessionEntity, { cascade: true, nullable: false })
+  @JoinColumn({ name: 'session_id' })
+  session: SessionEntity;
+
+  @ManyToOne(() => ParticipantEntity, { cascade: true, nullable: false })
+  @JoinColumn([
+    { name: 'session_id', referencedColumnName: 'sessionId' },
+    { name: 'user_id', referencedColumnName: 'userId' },
+  ])
+  participant: ParticipantEntity;
 }

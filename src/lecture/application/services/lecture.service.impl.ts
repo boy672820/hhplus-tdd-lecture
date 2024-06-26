@@ -24,12 +24,6 @@ export class LectureServiceImpl extends LectureService {
   }
 
   async apply(sessionId: string, userId: string): Promise<Participant> {
-    const session = await this.sessionRepository.findById(sessionId);
-
-    if (!session) {
-      throw ApplicationError.notFound('특강을 찾을 수 없습니다.');
-    }
-
     const user = await this.userRepository.findById(userId);
 
     if (!user) {
@@ -45,8 +39,21 @@ export class LectureServiceImpl extends LectureService {
       throw ApplicationError.duplicated('이미 신청한 특강입니다.');
     }
 
-    const newParticipant = session.applyUser(user);
+    const session = await this.sessionRepository.findById(sessionId);
 
-    return newParticipant;
+    if (!session) {
+      throw ApplicationError.notFound('특강을 찾을 수 없습니다.');
+    }
+
+    return Participant.from({
+      userId: user.id,
+      sessionId: session.id,
+      realname: user.realname,
+      email: user.email,
+      phone: user.phone,
+      participantedDate: new Date(),
+      createdDate: user.createdDate,
+      updatedDate: user.updatedDate,
+    });
   }
 }

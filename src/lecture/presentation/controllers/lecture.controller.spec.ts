@@ -19,7 +19,7 @@ describe('LectureController', () => {
 
   describe('특강 신청하기', () => {
     it('유저는 특강을 신청할 수 있어야합니다.', async () => {
-      const lectureId = '1';
+      const sessionId = '1';
       const userId = '1';
 
       const expected: ParticipantResponse = {
@@ -29,7 +29,7 @@ describe('LectureController', () => {
         participantedDate: expect.any(Date),
       };
       await expect(
-        lectureController.apply(lectureId, { userId }),
+        lectureController.apply(sessionId, { userId }),
       ).resolves.toEqual(expected);
     });
   });

@@ -25,6 +25,7 @@ const session = Session.from({
   isPublished: true,
   maxParticipants: 30,
   lecture,
+  applications: [],
   createdDate: new Date(),
   updatedDate: new Date(),
 });
@@ -54,7 +55,7 @@ const userRepository: UserRepository = {
   findById: jest.fn().mockResolvedValue(Promise.resolve(user)),
 };
 const participantRepository: ParticipantRepository = {
-  findById: jest.fn().mockResolvedValue(Promise.resolve(participant)),
+  findById: jest.fn().mockResolvedValue(Promise.resolve(null)),
   save: jest.fn(),
   exists: jest.fn().mockResolvedValue(Promise.resolve(false)),
 };
@@ -93,7 +94,6 @@ describe('LectureService', () => {
       // given
       const lectureId = '1';
       const userId = '1';
-      jest.spyOn(participantRepository, 'findById').mockResolvedValueOnce(null);
 
       // when
       const result = await lectureService.apply(lectureId, userId);
@@ -118,6 +118,9 @@ describe('LectureService', () => {
         // given
         const lectureId = '1';
         const userId = '1';
+        jest
+          .spyOn(participantRepository, 'findById')
+          .mockResolvedValueOnce(participant);
 
         // when
         const result = lectureService.apply(lectureId, userId);

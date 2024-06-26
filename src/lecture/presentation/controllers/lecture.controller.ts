@@ -3,9 +3,9 @@ import { ParticipantResponse } from '../responses';
 
 @Controller('lectures')
 export class LectureController {
-  @Post(':lectureId/apply')
+  @Post('sessions/:sessionId/apply')
   async apply(
-    @Param('lectureId') lectureId: string,
+    @Param('sessionId') sessionId: string,
     { userId }: { userId: string },
   ): Promise<ParticipantResponse> {
     return ParticipantResponse.from({

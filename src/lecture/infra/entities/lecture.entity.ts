@@ -3,15 +3,15 @@ import { Column, Entity } from 'typeorm';
 
 @Entity('lectures')
 export class LectureEntity {
-  @PrimaryUlid()
+  @PrimaryUlid({ name: 'lecture_id' })
   id: string;
 
   @Column('text')
   name: string;
 
-  @ColumnDatetime()
+  @ColumnDatetime({ name: 'created_date' })
   createdDate: Date;
 
-  @ColumnDatetime()
+  @ColumnDatetime({ name: 'updated_date' })
   updatedDate: Date;
 }

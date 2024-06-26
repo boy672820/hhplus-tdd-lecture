@@ -1,5 +1,6 @@
 import { Session } from '../../domain/models';
 import { SessionEntity } from '../entities/session.entity';
+import { ApplicationMapper } from './application.mapper';
 import { LectureMapper } from './lecture.mapper';
 
 export class SessionMapper {
@@ -11,18 +12,22 @@ export class SessionMapper {
       isPublished: entity.isPublished,
       maxParticipants: entity.maxParticipants,
       lecture: LectureMapper.toDomain(entity.lecture),
+      applications: entity.applications.map(ApplicationMapper.toDomain),
       createdDate: entity.createdDate,
       updatedDate: entity.updatedDate,
     });
 
-  static toEntity = (domain: Session): SessionEntity => ({
-    id: domain.id,
-    date: domain.date,
-    time: domain.time,
-    isPublished: domain.isPublished,
-    maxParticipants: domain.maxParticipants,
-    lecture: LectureMapper.toEntity(domain.lecture),
-    createdDate: domain.createdDate,
-    updatedDate: domain.updatedDate,
-  });
+  static toEntity(domain: Session): SessionEntity {
+    const entity = new SessionEntity();
+    entity.id = domain.id;
+    entity.date = domain.date;
+    entity.time = domain.time;
+    entity.isPublished = domain.isPublished;
+    entity.maxParticipants = domain.maxParticipants;
+    entity.createdDate = domain.createdDate;
+    entity.updatedDate = domain.updatedDate;
+    entity.lecture = LectureMapper.toEntity(domain.lecture);
+    entity.applications = domain.applications.map(ApplicationMapper.toEntity);
+    return entity;
+  }
 }

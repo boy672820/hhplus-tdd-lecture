@@ -1,7 +1,8 @@
 import { ulid } from 'ulid';
 import { Lecture } from './lecture.model';
+import { Application } from './application.model';
 import { Participant } from './participant.model';
-import { User } from './user.model';
+import { DomainError } from '../../../lib/errors';
 
 interface Props {
   id: string;
@@ -10,6 +11,7 @@ interface Props {
   isPublished: boolean;
   maxParticipants: number;
   lecture: Lecture;
+  applications: Application[];
   createdDate: Date;
   updatedDate: Date;
 }
@@ -28,6 +30,7 @@ interface FromProps
     | 'isPublished'
     | 'maxParticipants'
     | 'lecture'
+    | 'applications'
     | 'createdDate'
     | 'updatedDate'
   > {}
@@ -39,6 +42,7 @@ export class Session implements Props {
   private _isPublished: boolean;
   private _maxParticipants: number;
   private _lecture: Lecture;
+  private _applications: Application[];
   private _createdDate: Date;
   private _updatedDate: Date;
 
@@ -60,6 +64,9 @@ export class Session implements Props {
   get lecture(): Lecture {
     return this._lecture;
   }
+  get applications(): Application[] {
+    return this._applications;
+  }
   get createdDate(): Date {
     return this._createdDate;
   }
@@ -73,6 +80,8 @@ export class Session implements Props {
     this._time = props.time;
     this._isPublished = props.isPublished;
     this._maxParticipants = props.maxParticipants;
+    this._applications = props.applications;
+    this._lecture = props.lecture;
     this._createdDate = props.createdDate;
     this._updatedDate = props.updatedDate;
   }
@@ -82,22 +91,29 @@ export class Session implements Props {
       ...props,
       id: ulid(),
       maxParticipants: props?.maxParticipants ?? 30,
+      applications: [],
       createdDate: new Date(),
       updatedDate: new Date(),
     });
 
   static from = (props: FromProps): Session => new Session(props);
 
-  applyUser(user: User): Participant {
-    return Participant.from({
-      userId: user.id,
+  apply(participant: Participant): Application {
+    if (this._applications.length === this.maxParticipants) {
+      throw DomainError.limitExceeded('참가자가 모두 모집되었습니다.');
+    }
+
+    const newApplication = Application.create({
+      userId: participant.userId,
       sessionId: this.id,
-      realname: user.realname,
-      email: user.email,
-      phone: user.phone,
-      participantedDate: new Date(),
-      createdDate: user.createdDate,
-      updatedDate: user.updatedDate,
+      realname: participant.realname,
+      email: participant.email,
+      phone: participant.phone,
+      createdDate: participant.createdDate,
+      updatedDate: participant.updatedDate,
     });
+    this._applications.push(newApplication);
+    this._updatedDate = new Date();
+    return newApplication;
   }
 }

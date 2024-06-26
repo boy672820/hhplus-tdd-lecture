@@ -1,6 +1,7 @@
 import { ColumnDatetime, PrimaryUlid } from '@lib/decorators';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { LectureEntity } from './lecture.entity';
+import { ApplicationEntity } from './application.entity';
 
 @Entity('sessions')
 export class SessionEntity {
@@ -28,4 +29,7 @@ export class SessionEntity {
   @ManyToOne(() => LectureEntity, { cascade: true, nullable: false })
   @JoinColumn({ name: 'lecture_id' })
   lecture: LectureEntity;
+
+  @OneToMany(() => ApplicationEntity, (application) => application.session)
+  applications: ApplicationEntity[];
 }
