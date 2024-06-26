@@ -33,7 +33,7 @@ describe('특강 세션', () => {
       });
 
       // when
-      const participant = session.createParticipant(user);
+      const participant = session.enterUser(user);
 
       // then
       const expected = Participant.from({
@@ -66,7 +66,7 @@ describe('특강 세션', () => {
       });
 
       // when
-      const application = session.apply(participant);
+      const application = session.applyParticipant(participant);
 
       // then
       const expected = Application.from({
@@ -99,10 +99,10 @@ describe('특강 세션', () => {
         });
 
         for (let i = 0; i < 30; i++) {
-          session.apply(participant);
+          session.applyParticipant(participant);
         }
 
-        expect(() => session.apply(participant)).toThrow(
+        expect(() => session.applyParticipant(participant)).toThrow(
           DomainError.limitExceeded('참가자가 모두 모집되었습니다.'),
         );
       });

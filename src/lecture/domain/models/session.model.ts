@@ -98,7 +98,9 @@ export class Session implements Props {
 
   static from = (props: FromProps): Session => new Session(props);
 
-  apply(participant: Participant): Application {
+  // enterUser(user: User): Participant {}
+
+  applyParticipant(participant: Participant): Application {
     if (this._applications.length === this.maxParticipants) {
       throw DomainError.limitExceeded('참가자가 모두 모집되었습니다.');
     }
