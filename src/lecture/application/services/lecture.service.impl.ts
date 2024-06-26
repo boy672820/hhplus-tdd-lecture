@@ -47,8 +47,6 @@ export class LectureServiceImpl extends LectureService {
 
     const newParticipant = session.applyUser(user);
 
-    await this.participantRepository.save(newParticipant);
-
     return newParticipant;
   }
 }

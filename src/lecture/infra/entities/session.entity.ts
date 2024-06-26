@@ -1,5 +1,5 @@
 import { ColumnDatetime, PrimaryUlid } from '@lib/decorators';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { LectureEntity } from './lecture.entity';
 
 @Entity('sessions')
@@ -26,5 +26,6 @@ export class SessionEntity {
   updatedDate: Date;
 
   @ManyToOne(() => LectureEntity, { cascade: true, nullable: false })
+  @JoinColumn({ name: 'lecture_id' })
   lecture: LectureEntity;
 }

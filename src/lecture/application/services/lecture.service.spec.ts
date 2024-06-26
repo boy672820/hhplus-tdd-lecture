@@ -111,7 +111,6 @@ describe('LectureService', () => {
       });
       expect(result).toEqual(expected);
       expect(result).toBeInstanceOf(Participant);
-      expect(participantRepository.save).toHaveBeenCalled();
     });
 
     describe('다음의 경우 특강 신청이 실패합니다.', () => {
