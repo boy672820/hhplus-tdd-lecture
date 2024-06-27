@@ -1,4 +1,5 @@
-import { DomainError } from '../../../lib/errors';
+import { LocalDate, LocalTime } from '@lib/types';
+import { DomainError } from '@lib/errors';
 import { Application } from './application.model';
 import { Lecture } from './lecture.model';
 import { User } from './user.model';
@@ -19,8 +20,8 @@ describe('Lecture', () => {
   beforeEach(() => {
     lecture = Lecture.create({
       name: '강의 이름',
-      date: new Date(),
-      time: new Date(),
+      date: LocalDate.now(),
+      time: LocalTime.now().minusHours(1),
       maxParticipants: 10,
     });
   });
@@ -57,6 +58,35 @@ describe('Lecture', () => {
         // Then
         expect(() => lecture.applyUser(user)).toThrow(
           DomainError.limitExceeded('특강 신청이 마감되었습니다.'),
+        );
+      });
+
+      it('지정된 시간(date & time) 이전에 신청할 경우', () => {
+        // // Given
+        const user = createUser();
+        const oneDayLeft = Lecture.create({
+          date: LocalDate.now().addDays(1),
+          time: LocalTime.now().addHours(1),
+          maxParticipants: 10,
+          name: '강의 이름',
+        });
+
+        // // Then
+        expect(() => oneDayLeft.applyUser(user)).toThrow(
+          DomainError.invalidParameter('특강 신청이 가능한 시간이 아닙니다.'),
+        );
+
+        // Given
+        const oneHourLeft = Lecture.create({
+          date: LocalDate.now(),
+          time: LocalTime.now().addHours(1),
+          maxParticipants: 10,
+          name: '강의 이름',
+        });
+
+        // Then
+        expect(() => oneHourLeft.applyUser(user)).toThrow(
+          DomainError.invalidParameter('특강 신청이 가능한 시간이 아닙니다.'),
         );
       });
     });

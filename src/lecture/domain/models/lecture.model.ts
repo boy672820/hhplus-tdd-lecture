@@ -1,3 +1,4 @@
+import { LocalDate, LocalTime } from '@lib/types';
 import { DomainError } from '@lib/errors';
 import { ulid } from 'ulid';
 import { User } from './user.model';
@@ -6,8 +7,8 @@ import { Application } from './application.model';
 export interface LectureProps {
   id: string;
   name: string;
-  date: Date;
-  time: Date;
+  date: LocalDate;
+  time: LocalTime;
   maxParticipants: number;
   remainingSeats: number;
   createdDate: Date;
@@ -17,8 +18,8 @@ export interface LectureProps {
 export class Lecture implements LectureProps {
   private _id: string;
   private _name: string;
-  private _date: Date;
-  private _time: Date;
+  private _date: LocalDate;
+  private _time: LocalTime;
   private _maxParticipants: number;
   private _remainingSeats: number;
   private _createdDate: Date;
@@ -30,10 +31,10 @@ export class Lecture implements LectureProps {
   get name(): string {
     return this._name;
   }
-  get date(): Date {
+  get date(): LocalDate {
     return this._date;
   }
-  get time(): Date {
+  get time(): LocalTime {
     return this._time;
   }
   get maxParticipants(): number {
@@ -76,6 +77,13 @@ export class Lecture implements LectureProps {
   applyUser(user: User): Application {
     if (this.remainingSeats === 0) {
       throw DomainError.limitExceeded('특강 신청이 마감되었습니다.');
+    }
+
+    if (
+      LocalDate.now().isBeforeOrEqual(this.date) &&
+      LocalTime.now().isBefore(this.time)
+    ) {
+      throw DomainError.invalidParameter('특강 신청이 가능한 시간이 아닙니다.');
     }
 
     this._remainingSeats -= 1;

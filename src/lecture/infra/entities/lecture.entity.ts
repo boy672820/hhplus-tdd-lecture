@@ -10,10 +10,10 @@ export class LectureEntity {
   name: string;
 
   @Column({ type: 'date' })
-  date: Date;
+  date: string;
 
   @Column({ type: 'time' })
-  time: Date;
+  time: string;
 
   @Column({ type: 'int', name: 'max_participants' })
   maxParticipants: number;

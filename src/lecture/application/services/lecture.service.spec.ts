@@ -13,12 +13,13 @@ import {
   UserRepository,
 } from '../../domain/repositories';
 import { lectureServiceProvider } from '..';
+import { LocalDate, LocalTime } from '../../../lib/types';
 
 const lecture = Lecture.from({
   id: '1',
   name: '테스트 특강',
-  date: new Date(),
-  time: new Date(),
+  date: LocalDate.now(),
+  time: LocalTime.now().minusHours(1),
   maxParticipants: 30,
   remainingSeats: 30,
   createdDate: new Date(),
