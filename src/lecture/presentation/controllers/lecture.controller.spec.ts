@@ -1,9 +1,9 @@
+import { LocalDate, LocalTime, ResponseEntity } from '@lib/types';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LectureController } from './lecture.controller';
 import { ApplicationResponse, LectureResponse } from '../responses';
 import { LectureService } from '../../application/services';
 import { Application, Lecture } from '../../domain/models';
-import { LocalDate, LocalTime } from '../../../lib/types';
 
 const application = Application.from({
   id: '1',
@@ -44,9 +44,10 @@ describe('LectureController', () => {
       const result = await lectureController.apply(lectureId, { userId });
 
       // Then
-      const expected: ApplicationResponse = {
-        appliedDate: application.appliedDate,
-      };
+      const expected: ResponseEntity<ApplicationResponse> =
+        ResponseEntity.okWith({
+          appliedDate: application.appliedDate,
+        });
       expect(result).toEqual(expected);
     });
   });
@@ -72,7 +73,9 @@ describe('LectureController', () => {
       const result = await lectureController.findAll();
 
       // Then
-      const expected: LectureResponse[] = lectures.map(LectureResponse.from);
+      const expected: ResponseEntity<LectureResponse[]> = ResponseEntity.okWith(
+        lectures.map(LectureResponse.from),
+      );
       expect(result).toEqual(expected);
     });
   });
@@ -88,7 +91,8 @@ describe('LectureController', () => {
       const result = await lectureController.isApplied(lectureId, userId);
 
       // Then
-      expect(result).toBe(true);
+      const expected: ResponseEntity<boolean> = ResponseEntity.okWith(true);
+      expect(result).toEqual(expected);
     });
   });
 });

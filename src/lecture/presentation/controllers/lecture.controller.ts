@@ -1,3 +1,4 @@
+import { ResponseEntity } from '@lib/types';
 import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import { ApplicationResponse, LectureResponse } from '../responses';
 import { LectureService } from '../../application/services';
@@ -11,9 +12,9 @@ export class LectureController {
    * 특강 전체 목록을 조회합니다.
    */
   @Get()
-  async findAll(): Promise<LectureResponse[]> {
+  async findAll(): Promise<ResponseEntity<LectureResponse[]>> {
     const lectures = await this.lectureService.findAll();
-    return lectures.map(LectureResponse.from);
+    return ResponseEntity.okWith(lectures.map(LectureResponse.from));
   }
 
   /**
@@ -23,9 +24,9 @@ export class LectureController {
   async apply(
     @Param('lectureId') lectureId: string,
     @Body() { userId }: ApplyRequest,
-  ): Promise<ApplicationResponse> {
+  ): Promise<ResponseEntity<ApplicationResponse>> {
     const application = await this.lectureService.apply(lectureId, userId);
-    return ApplicationResponse.from(application);
+    return ResponseEntity.okWith(ApplicationResponse.from(application));
   }
 
   /**
@@ -35,7 +36,8 @@ export class LectureController {
   async isApplied(
     @Param('lectureId') lectureId: string,
     @Param('userId') userId: string,
-  ): Promise<boolean> {
-    return this.lectureService.isApplied(lectureId, userId);
+  ): Promise<ResponseEntity<boolean>> {
+    const isApplied = await this.lectureService.isApplied(lectureId, userId);
+    return ResponseEntity.okWith(isApplied);
   }
 }

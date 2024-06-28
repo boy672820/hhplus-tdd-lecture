@@ -17,8 +17,12 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:integration": "jest --config ./test/jest-integration.json"
+    "test:e2e": "docker-compose -f docker/test/docker-compose.yml up -d && jest --config ./test/jest-e2e.json",
+    "test:integration": "docker-compose -f docker/test/docker-compose.yml up -d && jest --config ./test/jest-integration.json",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d typeorm/datasource.ts",
+    "typeorm:test": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d typeorm/test-datasource.ts",
+    "migration:create": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create ./typeorm/migrations/migration",
+    "migration:generate": "yarn typeorm migration:generate ./typeorm/migrations/migration"
   },
   "dependencies": {
     "@js-joda/core": "^5.6.3",

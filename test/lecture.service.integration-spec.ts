@@ -69,7 +69,7 @@ describe('LectureService (Integration)', () => {
         .createQueryBuilder()
         .delete()
         .from('applications')
-        .where('lectureId = :lectureId', { lectureId: mockLecture.id })
+        .where('lecture_id = :lectureId', { lectureId: mockLecture.id })
         .execute();
     });
 
