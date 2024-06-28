@@ -1,0 +1,16 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".integration-spec.ts$",
+  "transform": {
+    "^.+\\.ts$": "ts-jest"
+  },
+  "setupFilesAfterEnv": ["<rootDir>/helpers/setup.ts"],
+  "moduleNameMapper": {
+    "^@lib$": "<rootDir>/../src/lib",
+    "^@lib/(.*)$": "<rootDir>/../src/lib/$1",
+    "^@config$": "<rootDir>/../src/config",
+    "^@config/(.*)$": "<rootDir>/../src/config/$1"
+  }
+}
