@@ -1,6 +1,7 @@
-import { Provider } from '@nestjs/common';
+import { Provider, Type } from '@nestjs/common';
 import { LectureService } from './services';
 import { LectureServiceImpl } from './services/lecture.service.impl';
+import { UserAppliedHandler } from './events/user-applied.handler';
 
 export const lectureServiceProvider: Provider = {
   provide: LectureService,
@@ -8,3 +9,4 @@ export const lectureServiceProvider: Provider = {
 };
 
 export const services: Provider[] = [lectureServiceProvider];
+export const eventHandlers: Type<any>[] = [UserAppliedHandler];

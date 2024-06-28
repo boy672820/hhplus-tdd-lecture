@@ -7,17 +7,19 @@ import { LectureMapper } from '../mappers/lecture.mapper';
 
 @Injectable()
 export class LectureRepositoryImpl implements LectureRepository {
+  constructor(private readonly mapper: LectureMapper) {}
+
   async save(lecture: Lecture): Promise<void> {
     await connection.manager
       .getRepository(LectureEntity)
-      .save(LectureMapper.toEntity(lecture));
+      .save(this.mapper.toEntity(lecture));
   }
 
   async findAll(): Promise<Lecture[]> {
     const lectures = await connection.manager
       .getRepository(LectureEntity)
       .find();
-    return lectures.map(LectureMapper.toDomain);
+    return lectures.map(this.mapper.toDomain);
   }
 
   async findById(id: string): Promise<Lecture> {
@@ -27,6 +29,6 @@ export class LectureRepositoryImpl implements LectureRepository {
         where: { id },
         lock: { mode: 'pessimistic_write' },
       });
-    return lecture ? LectureMapper.toDomain(lecture) : null;
+    return lecture ? this.mapper.toDomain(lecture) : null;
   }
 }

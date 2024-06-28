@@ -1,4 +1,4 @@
-import { Provider } from '@nestjs/common';
+import { Provider, Type } from '@nestjs/common';
 import {
   USER_REPOSITORY,
   PARTICIPANT_REPOSITORY,
@@ -9,6 +9,7 @@ import { ParticipantRepositoryImpl } from './repositories/participant.repository
 import { UserRepositoryImpl } from './repositories/user.repository.impl';
 import { LectureRepositoryImpl } from './repositories/lecture.repository.impl';
 import { ApplicationRepositoryImpl } from './repositories/application.repository.impl';
+import { LectureMapper } from './mappers/lecture.mapper';
 
 export const participantRepositoryProvider: Provider = {
   provide: PARTICIPANT_REPOSITORY,
@@ -36,3 +37,5 @@ export const repositories: Provider[] = [
   userRepositoryProvider,
   applicationRepositoryProvider,
 ];
+
+export const mappers: Type<any>[] = [LectureMapper];

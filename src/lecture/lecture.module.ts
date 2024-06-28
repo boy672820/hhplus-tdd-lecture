@@ -1,10 +1,19 @@
 import { Module } from '@nestjs/common';
 import { controllers } from './presentation';
-import { services } from './application';
-import { repositories } from './infra';
+import { eventHandlers, services } from './application';
+import { mappers, repositories } from './infra';
+import { factories } from './domain';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
+  imports: [CqrsModule],
+  providers: [
+    ...services,
+    ...eventHandlers,
+    ...repositories,
+    ...mappers,
+    ...factories,
+  ],
   controllers,
-  providers: [...repositories, ...services],
 })
 export class LectureModule {}

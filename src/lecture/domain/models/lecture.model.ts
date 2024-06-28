@@ -1,8 +1,10 @@
+import { AggregateRoot } from '@nestjs/cqrs';
 import { LocalDate, LocalTime } from '@lib/types';
 import { DomainError } from '@lib/errors';
 import { ulid } from 'ulid';
 import { User } from './user.model';
 import { Application } from './application.model';
+import { UserAppliedEvent } from '../events';
 
 export interface LectureProps {
   id: string;
@@ -15,7 +17,10 @@ export interface LectureProps {
   updatedDate: Date;
 }
 
-export class Lecture implements LectureProps {
+export interface LectureCreateProps
+  extends Pick<LectureProps, 'name' | 'date' | 'time' | 'maxParticipants'> {}
+
+export class Lecture extends AggregateRoot implements LectureProps {
   private _id: string;
   private _name: string;
   private _date: LocalDate;
@@ -51,6 +56,7 @@ export class Lecture implements LectureProps {
   }
 
   private constructor(props: LectureProps) {
+    super();
     this._id = props.id;
     this._name = props.name;
     this._date = props.date;
@@ -61,9 +67,7 @@ export class Lecture implements LectureProps {
     this._updatedDate = props.updatedDate;
   }
 
-  static create = (
-    props: Pick<LectureProps, 'name' | 'date' | 'time' | 'maxParticipants'>,
-  ): Lecture =>
+  static create = (props: LectureCreateProps): Lecture =>
     new Lecture({
       ...props,
       id: ulid(),
@@ -87,6 +91,8 @@ export class Lecture implements LectureProps {
     }
 
     this._remainingSeats -= 1;
+
+    this.apply(new UserAppliedEvent(user.id, this.id));
 
     return Application.create({
       lectureId: this.id,
