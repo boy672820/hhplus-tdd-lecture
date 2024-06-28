@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { controllers } from './presentation';
 import { eventHandlers, services } from './application';
-import { mappers, repositories } from './infra';
-import { factories } from './domain';
+import { mappers, factories, repositories } from './infra';
 import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({

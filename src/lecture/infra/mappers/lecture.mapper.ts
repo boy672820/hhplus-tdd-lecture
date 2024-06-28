@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { LocalDate, LocalTime } from '@lib/types';
 import { Lecture } from '../../domain/models';
 import { LectureEntity } from '../entities/lecture.entity';
-import { LectureFactory } from '../../domain/factories';
+import { LectureFactory } from '../factories';
 
 @Injectable()
 export class LectureMapper {

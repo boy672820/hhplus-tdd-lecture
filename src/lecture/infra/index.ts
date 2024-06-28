@@ -10,6 +10,7 @@ import { UserRepositoryImpl } from './repositories/user.repository.impl';
 import { LectureRepositoryImpl } from './repositories/lecture.repository.impl';
 import { ApplicationRepositoryImpl } from './repositories/application.repository.impl';
 import { LectureMapper } from './mappers/lecture.mapper';
+import { LectureFactory } from './factories';
 
 export const participantRepositoryProvider: Provider = {
   provide: PARTICIPANT_REPOSITORY,
@@ -37,5 +38,7 @@ export const repositories: Provider[] = [
   userRepositoryProvider,
   applicationRepositoryProvider,
 ];
+
+export const factories: Type<any>[] = [LectureFactory];
 
 export const mappers: Type<any>[] = [LectureMapper];

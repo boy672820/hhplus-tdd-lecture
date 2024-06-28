@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EventPublisher } from '@nestjs/cqrs';
-import { Lecture, LectureCreateProps, LectureProps } from '../models';
+import { Lecture, LectureCreateProps, LectureProps } from '../../domain/models';
 
 @Injectable()
 export class LectureFactory {
