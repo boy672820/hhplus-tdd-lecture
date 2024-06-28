@@ -1,7 +1,9 @@
+import { AppConfigModule, AppConfigService } from '@config/app';
+import { setConnectionForTx } from '@lib/decorators';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppConfigModule, AppConfigService } from '@config/app';
 import { DatabaseConfigModule, DatabaseConfigService } from '@config/database';
+import { DataSource, DataSourceOptions } from 'typeorm';
 
 @Module({
   imports: [
@@ -23,6 +25,15 @@ import { DatabaseConfigModule, DatabaseConfigService } from '@config/database';
         logging: appConfig.nodeEnv === 'debug',
       }),
       inject: [AppConfigService, DatabaseConfigService],
+      dataSourceFactory: async (options?: DataSourceOptions) => {
+        if (!options) {
+          throw new Error('Invalid options passed');
+        }
+        const dataSource = new DataSource(options);
+        const connection = dataSource.createQueryRunner();
+        setConnectionForTx(connection);
+        return dataSource;
+      },
     }),
   ],
 })

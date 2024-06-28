@@ -1,3 +1,4 @@
+import { Transactional } from '@lib/decorators';
 import { ApplicationError } from '@lib/errors';
 import { Inject, Injectable } from '@nestjs/common';
 import { LectureService } from './lecture.service';
@@ -23,6 +24,7 @@ export class LectureServiceImpl extends LectureService {
     super();
   }
 
+  @Transactional()
   async apply(lectureId: string, userId: string): Promise<Application> {
     const lecture = await this.lectureRepository.findById(lectureId);
 
@@ -49,7 +51,7 @@ export class LectureServiceImpl extends LectureService {
     const newApplication = lecture.applyUser(user);
 
     await this.applicationRepository.save(newApplication);
-    await this.lectureRepository.save(lecture);
+    await this.lectureRepository.update(lecture);
 
     return newApplication;
   }

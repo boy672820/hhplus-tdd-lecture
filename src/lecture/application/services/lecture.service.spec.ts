@@ -15,6 +15,10 @@ import {
 import { lectureServiceProvider } from '..';
 import { LocalDate, LocalTime } from '../../../lib/types';
 
+jest.mock('@lib/decorators', () => ({
+  Transactional: () => jest.fn(),
+}));
+
 const lecture = Lecture.from({
   id: '1',
   name: '테스트 특강',
@@ -44,6 +48,8 @@ const applicationRepository: ApplicationRepository = {
 };
 const userRepository: UserRepository = {
   findById: jest.fn().mockResolvedValue(Promise.resolve(user)),
+  save: jest.fn(),
+  remove: jest.fn(),
 };
 const participantRepository: ParticipantRepository = {
   save: jest.fn(),

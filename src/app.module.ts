@@ -5,4 +5,5 @@ import { CoreModule } from './core/core.module';
 @Module({
   imports: [CoreModule, LectureModule],
 })
-export class AppModule {}
+export class AppModule {
+}

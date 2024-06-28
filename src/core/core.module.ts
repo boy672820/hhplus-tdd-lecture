@@ -1,8 +1,8 @@
+import { APP_FILTER } from '@nestjs/core';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './env.validator';
 import { DatabaseModule } from './database/database.module';
-import { APP_FILTER } from '@nestjs/core';
 import { ApplicationErrorFilter } from './application-error.filter';
 import { DomainErrorFilter } from './domain-error.filter';
 
