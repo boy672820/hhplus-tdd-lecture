@@ -41,6 +41,7 @@ const user = User.from({
 const lectureRepository: LectureRepository = {
   findById: jest.fn().mockResolvedValue(Promise.resolve(lecture)),
   save: jest.fn(),
+  findAll: jest.fn().mockResolvedValue([]),
 };
 const applicationRepository: ApplicationRepository = {
   findByUserIdAndLectureId: jest.fn().mockResolvedValue(Promise.resolve(null)),
@@ -164,6 +165,46 @@ describe('LectureService', () => {
           ApplicationError.duplicated('이미 신청한 특강입니다.'),
         );
       });
+    });
+  });
+
+  describe('특강 신청 완료 여부', () => {
+    it('특강 신청에 성공 또는 실패하였는지 알 수 있어야합니다.', async () => {
+      // given
+      const lectureId = '1';
+      const userId = '1';
+      jest
+        .spyOn(applicationRepository, 'findByUserIdAndLectureId')
+        .mockResolvedValueOnce(
+          Application.from({
+            id: '1',
+            lectureId: '1',
+            userId: '1',
+            appliedDate: new Date(),
+          }),
+        );
+
+      // when
+      const success = await lectureService.isApplied(lectureId, userId);
+
+      // then
+      expect(success).toBe(true);
+      expect(
+        applicationRepository.findByUserIdAndLectureId,
+      ).toHaveBeenCalledWith(userId, lectureId);
+
+      jest
+        .spyOn(applicationRepository, 'findByUserIdAndLectureId')
+        .mockResolvedValueOnce(null);
+
+      // when
+      const failed = await lectureService.isApplied(lectureId, userId);
+
+      // then
+      expect(failed).toBe(false);
+      expect(
+        applicationRepository.findByUserIdAndLectureId,
+      ).toHaveBeenCalledWith(userId, lectureId);
     });
   });
 });

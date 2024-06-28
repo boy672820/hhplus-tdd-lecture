@@ -2,7 +2,7 @@ import { Transactional } from '@lib/decorators';
 import { ApplicationError } from '@lib/errors';
 import { Inject, Injectable } from '@nestjs/common';
 import { LectureService } from './lecture.service';
-import { Application } from '../../domain/models';
+import { Application, Lecture } from '../../domain/models';
 import {
   APPLICATION_REPOSITORY,
   ApplicationRepository,
@@ -22,6 +22,11 @@ export class LectureServiceImpl extends LectureService {
     private readonly applicationRepository: ApplicationRepository,
   ) {
     super();
+  }
+
+  async findAll(): Promise<Lecture[]> {
+    const lectures = await this.lectureRepository.findAll();
+    return lectures;
   }
 
   @Transactional()
@@ -51,8 +56,18 @@ export class LectureServiceImpl extends LectureService {
     const newApplication = lecture.applyUser(user);
 
     await this.applicationRepository.save(newApplication);
-    await this.lectureRepository.update(lecture);
+    await this.lectureRepository.save(lecture);
 
     return newApplication;
+  }
+
+  async isApplied(lectureId: string, userId: string): Promise<boolean> {
+    const application =
+      await this.applicationRepository.findByUserIdAndLectureId(
+        userId,
+        lectureId,
+      );
+
+    return application !== null;
   }
 }

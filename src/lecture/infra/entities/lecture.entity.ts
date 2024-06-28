@@ -18,7 +18,7 @@ export class LectureEntity {
   @Column({ type: 'int', name: 'max_participants' })
   maxParticipants: number;
 
-  @Column({ type: 'int', name: 'remaing_seats' })
+  @Column({ type: 'int', name: 'remaining_seats' })
   remainingSeats: number;
 
   @ColumnDatetime({ name: 'created_date' })

@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LectureController } from './lecture.controller';
-import { ApplicationResponse } from '../responses';
+import { ApplicationResponse, LectureResponse } from '../responses';
 import { LectureService } from '../../application/services';
-import { Application } from '../../domain/models';
+import { Application, Lecture } from '../../domain/models';
+import { LocalDate, LocalTime } from '../../../lib/types';
 
 const application = Application.from({
   id: '1',
@@ -13,6 +14,8 @@ const application = Application.from({
 
 const lectureService: LectureService = {
   apply: jest.fn().mockResolvedValue(application),
+  findAll: jest.fn().mockResolvedValue([]),
+  isApplied: jest.fn().mockResolvedValue(true),
 };
 
 describe('LectureController', () => {
@@ -34,17 +37,58 @@ describe('LectureController', () => {
   describe('특강 신청하기', () => {
     it('유저는 특강을 신청할 수 있어야합니다.', async () => {
       // Given
-      const sessionId = '1';
+      const lectureId = '1';
       const userId = '1';
 
       // When
-      const result = await lectureController.apply(sessionId, { userId });
+      const result = await lectureController.apply(lectureId, { userId });
 
       // Then
       const expected: ApplicationResponse = {
         appliedDate: application.appliedDate,
       };
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe('특강 목록 조회', () => {
+    it('특강 목록을 조회할 수 있어야합니다.', async () => {
+      // Given
+      const lectures = [
+        Lecture.from({
+          id: '1',
+          name: 'test',
+          date: LocalDate.now(),
+          time: LocalTime.now(),
+          maxParticipants: 10,
+          remainingSeats: 10,
+          createdDate: new Date(),
+          updatedDate: new Date(),
+        }),
+      ];
+      jest.spyOn(lectureService, 'findAll').mockResolvedValue(lectures);
+
+      // When
+      const result = await lectureController.findAll();
+
+      // Then
+      const expected: LectureResponse[] = lectures.map(LectureResponse.from);
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('특강 신청 여부 조회', () => {
+    it('특강 신청 여부를 조회할 수 있어야합니다. (true or false)', async () => {
+      // Given
+      const lectureId = '1';
+      const userId = '1';
+      jest.spyOn(lectureService, 'isApplied').mockResolvedValue(true);
+
+      // When
+      const result = await lectureController.isApplied(lectureId, userId);
+
+      // Then
+      expect(result).toBe(true);
     });
   });
 });
